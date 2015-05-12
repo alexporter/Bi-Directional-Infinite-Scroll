@@ -1,0 +1,117 @@
+/***GENERAL***/
+body {
+    font-family: 'Raleway', sans-serif;
+    background-color: #E2E2E2;
+    font-size: 16px;
+}
+
+
+/***LOADER***/
+.loader, .loader:before, .loader:after {
+    border: 2px solid transparent;
+    border-radius: 50%;
+    position: absolute;
+}
+.loader {
+    display: none;
+    height: 25px;
+    width: 25px;
+    border-top-color: #28C6A6;
+    border-right-color: #28C6A6;
+    left: 50%;
+    transform: translateX(-50%);
+    -webkit-transform: translateX(-50%);
+    top: 13px;
+    -webkit-animation: spin 1.3s linear infinite;
+    animation: spin 1.5s linear infinite;
+}
+.loader:before {
+    content: '';
+    top: 3px;
+    left: 3px;
+    right: 3px;
+    bottom: 3px;
+    border-top-color: #5F5FDA;
+    border-right-color: #5F5FDA;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2.5s linear infinite;
+}
+.loader:after {
+    content: '';
+    top: 7px;
+    left: 7px;
+    right: 7px;
+    bottom: 7px;
+    border-top-color: #DC325D;
+    border-right-color: #DC325D;
+    -webkit-animation: spin 1s linear infinite;
+    animation: spin 1.25s linear infinite;
+}
+@-webkit-keyframes spin {
+    0%   {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+@keyframes spin {
+    0%   {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+
+/***MAIN***/
+#main-container {
+    padding: 25px 0;
+    position: relative;
+}
+#main-container ul {
+    padding: 0;
+}
+#main-container ul li {
+    position: relative;
+    background-color: #FBFBF9;
+    list-style-type: none;
+    min-height: 130px;
+    padding: 10px;
+    margin: 20px 10px 20px 10px;
+    border: 1px solid #D2D2D2;
+    border-radius: 3px;
+}
+.item-block {
+    float: left;
+    height: 130px;
+    width: 130px;
+    box-shadow: 0px 0px 6px 1px rgba(194, 191, 191, 1);
+    text-align: center;
+    line-height: 130px;
+    color: #FBFBF9;
+    font-size: 2em;
+}
+.item-text {
+    padding-left: 140px;
+    padding-right: 10px;
+    font-size: 0.9em;
+}
+.item-text h2 {
+    margin: 0;
+}
+.item-text p {
+    margin: 5px 0 15px 0;
+}
+.item-date {
+    position: absolute;
+    bottom: 8px;
+    right: 10px;
+    font-size: 0.7em;
+    font-style: italic;
+}

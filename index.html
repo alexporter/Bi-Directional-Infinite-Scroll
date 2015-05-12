@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html ng-app="biDirectionalScroll">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Bi-Directional Infinite Scroll</title>
+        <meta name="description" content="Bi-Directional Infinite Scroll" />
+        <meta name="author" content="Alex Porter" />
+        <link href="http://fonts.googleapis.com/css?family=Raleway:400,100,200,300,500,600,700,800,900" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="app.css">
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+    </head>
+	<body ng-controller="ScrollCtrl" scroll>
+        <div id="main-container">
+            <div class="loader"></div>
+			<ul>
+                <li ng-repeat="item in items" item-number={{item.number}} ng-cloak on-finish-render="ngRepeatFinished">
+                    <div class="item-block" style="background-color: {{item.color}};">{{item.number}}</div>
+                    <div class="item-text">
+                        <div><h2 style="color: {{item.color}};">{{item.title}}</h1></div>
+                        <p>{{item.text}}</p>
+                    </div>
+                    <div class="item-date">{{item.date | date:'M-dd h:mm:ss'}}</div>
+                </li>
+            </ul>
+		</div>
+        <script src="app.js"></script>
+    </body>
+</html>
