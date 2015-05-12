@@ -13,12 +13,14 @@ biDirectionalScroll.controller('ScrollCtrl', function($scope, ScrollItem)   {
     ];
     $scope.loading = false; // Used for flagging when loading new items (for simulated ajax)
     $scope.initialLoad = true; // Marked false after initial load of $scope.maxRows items
+    $scope.lastRemovedHeights = [];
     
     // Only change height after rendering is complete
     $scope.$on('ngRepeatFinished', function(ngRepeatFinishedEvent, el) {
         if(!$scope.initialLoad) {
             var itemHeight = angular.element(el).outerHeight(),
-                scrollPos = ($scope.scrollDir === 'down' ? -20 : 20) + $(window).scrollTop() + ($scope.scrollDir === 'down' ? -1 * $scope.lastRemovedHeight : itemHeight); // Determine new scroll position after item add/remove
+                scrollPos = ($scope.scrollDir === 'down' ? -20 : 20) + $(window).scrollTop() + ($scope.scrollDir === 'down' ? -1 * $scope.lastRemovedHeights[0] : itemHeight); // Determine new scroll position after item add/remove
+            $scope.lastRemovedHeights.splice(0, 1);
             $scope.loading = false;
             $scope.lastScrollTop = ($scope.scrollDir ==='down' ? scrollPos : scrollPos + 1); // Force the same scroll direction
             $(window).scrollTop(scrollPos);
@@ -67,7 +69,7 @@ biDirectionalScroll.controller('ScrollCtrl', function($scope, ScrollItem)   {
         // Get items based on itemNumbers. Remove item on opposite end and add item on scrolling end. Finally, hide loader.
         $scope.getItems(itemNumbers, function(items) {
             angular.forEach(items, function(item, k)   {
-                $scope.lastRemovedHeight = angular.element('[item-number=' + $scope.items[(removeIndex === -1 ? ($scope.items.length -1) : 0)].number + ']').outerHeight();
+                $scope.lastRemovedHeights.push(angular.element('[item-number=' + $scope.items[(removeIndex === -1 ? ($scope.items.length -1) : 0)].number + ']').outerHeight());
                 $scope.removeItem(removeIndex);
                 $scope.items.splice(($scope.scrollDir === 'down' ? $scope.items.length : 0), 0, item);
                 angular.element('.loader').css('display', 'none');
@@ -132,7 +134,7 @@ biDirectionalScroll.controller('ScrollCtrl', function($scope, ScrollItem)   {
 biDirectionalScroll.directive('scroll', function($window)  {
     // Handle item heights/positioning using jQuery
     return function(scope, element, attrs)  {
-        angular.element($window).bind('scroll', function()  {
+        angular.element($window).bind('scroll', function(e)  {
             if(typeof scope.lastScrollTop === 'undefined')    scope.lastScrollTop = 0;
             var fullHeight = $('body').height(),
                 viewportTop = $(window).scrollTop(),

@@ -69,6 +69,16 @@ body {
 }
 
 
+/***SETTINGS***/
+.settings {
+    position: absolute;
+    top: 5px;
+    right: 25px;
+    font-size: 1.5em;
+    cursor: pointer;
+}
+
+
 /***MAIN***/
 #main-container {
     padding: 25px 0;
