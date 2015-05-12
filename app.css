@@ -96,9 +96,10 @@ body {
     line-height: 130px;
     color: #FBFBF9;
     font-size: 2em;
+    margin-right: 7px;
+    margin-bottom: 2px;
 }
 .item-text {
-    padding-left: 140px;
     padding-right: 10px;
     font-size: 0.9em;
 }
