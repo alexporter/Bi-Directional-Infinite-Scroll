@@ -39,4 +39,50 @@ describe('ScrollCtrl', function() {
         scope.removeItem(0);
         expect(scope.items).toEqual([2,3]);
     });
-})
+    
+    
+});
+
+describe('ScrollItem', function()   {
+    beforeEach(module('biDirectionalScroll'));
+    
+    var ScrollItem, $rootScope;
+    
+    beforeEach(inject(function(_ScrollItem_, _$rootScope_, $q)   {
+        ScrollItem = _ScrollItem_;
+        $rootScope = _$rootScope_;
+        
+        var deferred = $q.defer();
+        deferred.resolve({ number: 1 });
+        
+        spyOn(ScrollItem, 'getItems').and.returnValue(deferred.promise);
+    }));
+    
+    it('should have getDefaultText function', function()    {
+        expect(angular.isFunction(ScrollItem.getDefaultText)).toBe(true);
+    });
+    
+    it('should have getDefaultItem function', function()    {
+        expect(angular.isFunction(ScrollItem.getDefaultItem)).toBe(true);
+    });
+    
+    it('should have getItems function', function()    {
+        expect(angular.isFunction(ScrollItem.getItems)).toBe(true);
+    });
+    
+    it('getDefaultItem should return object', function()    {
+        var item = ScrollItem.getDefaultItem({ number: 1 });
+        expect(item).toEqual(jasmine.any(Object));
+    });
+    
+    it('getItems should return promise and expect result object', function()    {
+        var result;
+        
+        ScrollItem.getItems([{ number: 1 }]).then(function(returnFromPromise)   {
+            result = returnFromPromise;
+        });
+        
+        $rootScope.$apply();
+        expect(result).toEqual(jasmine.any(Object));
+    });
+});

@@ -1,23 +1,24 @@
 var biDirectionalScroll = angular.module('biDirectionalScroll', []);
 
 biDirectionalScroll.controller('ScrollCtrl', function($scope, ScrollItem)   {
-    $scope.maxRows = 22;
-    $scope.addTopThreshold = $scope.addBottomThreshold = 600;
+    $scope.maxRows = 22; // Maximum # of rows in container
+    $scope.addTopThreshold = 600; // Threshold for adding to top
+    $scope.addBottomThreshold = 600; // Threshold for adding to bottom
     $scope.items = [];
     $scope.itemsToAdd = 1;
-    $scope.colors = [
+    $scope.colors = [ // Array of item colors
         '#28C6A6',
         '#5F5FDA',
         '#DC325D'
     ];
-    $scope.loading = false;
-    $scope.initialLoad = true;
+    $scope.loading = false; // Used for flagging when loading new items (for simulated ajax)
+    $scope.initialLoad = true; // Marked false after initial load of $scope.maxRows items
     
     // Only change height after rendering is complete
     $scope.$on('ngRepeatFinished', function(ngRepeatFinishedEvent, el) {
         if(!$scope.initialLoad) {
             var itemHeight = angular.element(el).outerHeight(),
-                scrollPos = ($scope.scrollDir === 'down' ? -20 : 20) + $(window).scrollTop() + ($scope.scrollDir === 'down' ? -1 * $scope.lastRemovedHeight : itemHeight);
+                scrollPos = ($scope.scrollDir === 'down' ? -20 : 20) + $(window).scrollTop() + ($scope.scrollDir === 'down' ? -1 * $scope.lastRemovedHeight : itemHeight); // Determine new scroll position after item add/remove
             $scope.loading = false;
             $scope.lastScrollTop = ($scope.scrollDir ==='down' ? scrollPos : scrollPos + 1); // Force the same scroll direction
             $(window).scrollTop(scrollPos);
@@ -28,9 +29,12 @@ biDirectionalScroll.controller('ScrollCtrl', function($scope, ScrollItem)   {
     $scope.addItems = function(addType, removeIndex, numItems)   {
         if(typeof numItems !== 'number')    numItems = 1;
         $scope.loading = true;
+        
+        // Handle loader based on if adding to top or bottom
         angular.element('.loader').css('top', ($scope.scrollDir === 'down' ? 'inherit' : '5px'));
         angular.element('.loader').css('bottom', ($scope.scrollDir === 'down' ? '5px' : 'inherit'));
         angular.element('.loader').css('display', 'block');
+                
         var itemNumber = 1,
             item,
             itemNumbers = [];
@@ -60,6 +64,7 @@ biDirectionalScroll.controller('ScrollCtrl', function($scope, ScrollItem)   {
             }
         }
         
+        // Get items based on itemNumbers. Remove item on opposite end and add item on scrolling end. Finally, hide loader.
         $scope.getItems(itemNumbers, function(items) {
             angular.forEach(items, function(item, k)   {
                 $scope.lastRemovedHeight = angular.element('[item-number=' + $scope.items[(removeIndex === -1 ? ($scope.items.length -1) : 0)].number + ']').outerHeight();
@@ -80,12 +85,16 @@ biDirectionalScroll.controller('ScrollCtrl', function($scope, ScrollItem)   {
             text = [],
             rand = Math.floor((Math.random() * 4) + 1);
         
+        // Used for creating an array of a random number (between 1 - 4) of default text entries
         for(var i=0; i<rand; i++)   {
             text.push(defaultText);
         }
+        
+        // Build configs for each item
         angular.forEach(nums, function(num) {
             configs.push({ number: num, color: $scope.colors[(num - 1) % $scope.colors.length], text: text.join(' ') });
         });
+        
         ScrollItem.getItems(configs, skipDelay)
         .then(successFn);
     }
@@ -140,41 +149,17 @@ biDirectionalScroll.directive('scroll', function($window)  {
             }
             
             if(!scope.loading)  {
-                scope.scrollDir = (scope.lastScrollTop > viewportTop ? 'up' : 'down');
-                if(scope.scrollDir === 'down' && fromBottom <= scope.addBottomThreshold)    {
+                scope.scrollDir = (scope.lastScrollTop > viewportTop ? 'up' : 'down'); // Set scroll direction
+                
+                if(scope.scrollDir === 'down' && fromBottom <= scope.addBottomThreshold)    { // Add items to bottom if scrolling down
                     scope.addItems('append', 0, scope.itemsToAdd);
                 }
-                else if(scope.scrollDir === 'up' && viewportTop <= scope.addTopThreshold)   {
+                else if(scope.scrollDir === 'up' && viewportTop <= scope.addTopThreshold)   { // Add items to top if scrolling up
                     scope.addItems('prepend', -1, scope.itemsToAdd);
                 }
             }
             
             scope.lastScrollTop = viewportTop;
-            
-            // This was making items that scroll just out of view opaque
-            /*$('li').each(function(k, item) {
-                var itemTop = $(item).offset().top,
-                    itemHeight = $(item).outerHeight(),
-                    goingOffTop = (scope.scrollDir === 'down' ? (itemTop < viewportTop && (itemTop + itemHeight) > viewportTop) : false), // Check if item has begun to go off the top of the viewport (if scrolling down)
-                    goingOffBottom = (scope.scrollDir === 'up' ? (itemTop < viewportBottom && (itemTop + itemHeight) > viewportBottom) : false), // Check if item has begun to go off the bottom of the viewport (if scrolling up)
-                    opacity = 1,
-                    minOpacity = 0.05; // Minimum opacity allowed for items scrolling out of view
-
-                // If item is going off of top or bottom then determine what percent has gone off 
-                // and adjust opacity as a percent down to the minimum opacity
-                if(goingOffTop || goingOffBottom) {
-                    var percentOff;
-                    if(goingOffTop) {
-                        percentOff = (viewportTop - itemTop) / itemHeight;
-                    }
-                    else    {
-                        percentOff = ((itemTop + itemHeight) - viewportBottom) / itemHeight;
-                    }
-
-                    opacity = minOpacity + (1 - percentOff) * (1 - minOpacity);
-                }
-                $(item).css({ 'opacity': opacity });
-            });*/
             
             scope.$apply();
         });
@@ -186,7 +171,7 @@ biDirectionalScroll.directive('onFinishRender', function($timeout) {
         restrict: 'A',
         link: function(scope, element, attr)    {
             $timeout(function() {
-                scope.$emit('ngRepeatFinished', element);
+                scope.$emit('ngRepeatFinished', element); // Emit ngRepeatFinished when done rendering ng-repeat items
             });
         }
     }
@@ -198,6 +183,7 @@ biDirectionalScroll.factory('ScrollItem', function($q, $timeout)  {
             return 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
         },
         getDefaultItem: function(config)   {
+            // Default configuration for each item
             return angular.extend({
                 title: 'Item #' + (typeof config === 'object' && config.number ? config.number: 'N/A'),
                 text: this.getDefaultText(),
